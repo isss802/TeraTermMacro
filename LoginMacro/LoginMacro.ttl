@@ -1,0 +1,84 @@
+;##############
+;#Login Macro
+;##############
+
+;File List
+fileopen list0 'IP.txt' 0
+fileopen list1 'Command.txt' 0
+
+
+;Loop0
+:loop0
+filereadln list0 connectip
+if result goto fclose
+
+;Login
+strconcat connectip ':23 /nossh /T=1'
+connect connectip
+pause 2
+sendln 'manager'
+sendln 'test'
+
+
+;Log
+sendln
+getdate datestr
+logname = datestr
+strconcat logname '-'
+strconcat logname connectip
+strconcat logname '.log'
+getdir dirstr
+dir = dirstr
+strconcat dir '/log/'
+makepath path dir logname
+logopen path 0 1 0 1
+
+:TitleIF
+sendln
+wait '#' '>'
+If result=1 goto SetTitle1
+If result=2 goto SetTitle2
+
+:SetTitle1
+recvln
+i = inputstr
+strscan i '#'
+a = result -1
+strcopy i 0 a title
+settitle title
+goto CMD
+
+:SetTitle2
+recvln
+i = inputstr
+strscan i '>'
+a = result -1
+strcopy i 0 a title
+settitle title
+
+
+:CMD
+;Loop1
+:loop1
+filereadln list1 commandlist
+if result goto exit
+
+sendln commandlist
+wait '#' '>' '$'
+pause 1
+goto loop1
+;ŸLoop1
+
+
+:exit
+fileopen list1 'Command.txt' 0
+unlink;
+;closett
+goto loop0
+;ŸLoop1End
+
+
+;END
+:fclose
+end
+
