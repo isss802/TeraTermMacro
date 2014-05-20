@@ -13,15 +13,15 @@ filereadln list0 connectip
 if result goto fclose
 
 ;Login
-strconcat connectip ':23 /nossh /T=1'
-connect connectip
+telnetip = connectip
+strconcat telnetip ':23 /nossh /T=1'
+connect telnetip
 pause 2
 sendln 'manager'
 sendln 'test'
 
 
 ;Log
-sendln
 getdate datestr
 logname = datestr
 strconcat logname '-'
@@ -29,11 +29,12 @@ strconcat logname connectip
 strconcat logname '.log'
 getdir dirstr
 dir = dirstr
-strconcat dir '/log/'
+strconcat dir '\log'
 makepath path dir logname
 logopen path 0 1 0 1
 
 :TitleIF
+sendln
 sendln
 wait '#' '>'
 If result=1 goto SetTitle1
